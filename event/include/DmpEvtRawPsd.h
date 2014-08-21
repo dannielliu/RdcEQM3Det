@@ -24,18 +24,21 @@ public:
   DmpEvtRawPsd();
   ~DmpEvtRawPsd();
   void  Reset();
-  void  SetFeeNavigator(const DmpFeeNavig &r){fFeeNavig = r;}
+  void  SetFeeNavigator(const DmpFeeNavig &s){fFeeNavig.push_back(s);}
   void  AppendSignal(const short &gid,const short &v);
   void  GenerateStatus();
 
-  bool  IsGoodEvent()const{return (fFeeNavig.CRCFlag && fFeeNavig.TriggerFlag && fFeeNavig.PackageFlag);}
-  short GetTrigger()const{return fFeeNavig.Trigger;}
-  short GetRunMode()const{return fFeeNavig.RunMode;}
-  DmpFeeNavig GetFeeNavigator()const{return fFeeNavig;}
+  bool  IsGoodEvent()const{return fIsGood;}
+  short GetTrigger()const{return fTrigger;}
+  short GetRunMode()const{return fRunMode;}
+  std::vector<DmpFeeNavig> GetFeeNavigator()const{return fFeeNavig;}
   short GetSignal(const short &gid)const;
 
 private:
-  DmpFeeNavig   fFeeNavig;
+  short fTrigger;
+  short fRunMode;
+  bool  fIsGood;
+  std::vector<DmpFeeNavig>  fFeeNavig;
   std::vector<short>    fGlobalID;
   /*
    *    gid for bgo signal: short: bit 15~0

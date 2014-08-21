@@ -1,5 +1,5 @@
 /*
- *  $Id: DmpEvtRawPsd.cc, 2014-08-20 17:49:42 DAMPE $
+ *  $Id: DmpEvtRawPsd.cc, 2014-08-20 19:36:43 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 24/04/2014
 */
@@ -10,7 +10,9 @@
 #include "DmpEFeeFlags.h"
 
 //-------------------------------------------------------------------
-DmpEvtRawPsd::DmpEvtRawPsd(){
+DmpEvtRawPsd::DmpEvtRawPsd()
+ :fTrigger(-1),fRunMode(-1),fIsGood(true)
+{
 }
 
 //-------------------------------------------------------------------
@@ -19,8 +21,10 @@ DmpEvtRawPsd::~DmpEvtRawPsd(){
 
 //-------------------------------------------------------------------
 void DmpEvtRawPsd::Reset(){
+  fFeeNavig.clear();
   fGlobalID.clear();
   fADC.clear();
+  fIsGood = true;
 }
 
 //-------------------------------------------------------------------
@@ -38,16 +42,46 @@ void DmpEvtRawPsd::AppendSignal(const short &gid,const short &v){
 
 //-------------------------------------------------------------------
 void DmpEvtRawPsd::GenerateStatus(){
+  for(size_t i=0;i<fFeeNavig.size();++i){
+    if(false ==  fFeeNavig[i].CRCFlag){
+      fIsGood = false;
+      break;
+    }
+    if(DmpETriggerFlag::kCheckWrong == fFeeNavig[i].TriggerFlag){
+      fIsGood = false;
+      break;
+    }
+    if(DmpEPackageFlag::kGood != fFeeNavig[i].PackageFlag){
+      fIsGood = false;
+      break;
+    }
+  }
 //-------------------------------------------------------------------
-  short lastTrigger = fFeeNavig.Trigger;
-  if(-1 != lastTrigger && -1 != fFeeNavig.Trigger){
-    short t = lastTrigger-fFeeNavig.Trigger;
+  fTrigger = fFeeNavig[0].Trigger;
+  for(short i=1;i<fFeeNavig.size();++i){
+    if(fTrigger != fFeeNavig[i].Trigger){
+      fTrigger = -1;
+      fIsGood = false;
+    }
+  }
+//-------------------------------------------------------------------
+  short lastTrigger = fTrigger;
+  if(-1 != lastTrigger && -1 != fTrigger){
+    short t = lastTrigger-fTrigger;
     if(t != -1 || t != 0xff){ // TODO: check ??
       //fIsGood = false;        // trigger skip, but event not wrong
 // *
 // *  TODO: cout warning
 // *
       //DmpLogError<<" trigger not continuous:\t"<<t<<DmpLogEndl;
+    }
+  }
+//-------------------------------------------------------------------
+  fRunMode = fFeeNavig[0].RunMode;
+  for(size_t i=1;i<fFeeNavig.size();++i){
+    if(fRunMode != fFeeNavig[i].RunMode){
+      fRunMode = -1;
+      //fIsGood = false;  // yes! Some good event run mode not match, too
     }
   }
 }

@@ -33,7 +33,7 @@ rdcAlgBT.Set("PackageNumber","30")
 #rdcAlgBT.Set("Stk/Connector",Stk/EQM")
 rdcAlgBT.Set("Bgo/Connector","Bgo/EQM")
 #rdcAlgBT.Set("Nud/Connector","Nud/EQM")
-rdcAlgBT.Set("BinaryFile","A2Data00_20140501-190145.frd")
+rdcAlgBT.Set("BinaryFile","A2Data00_20140513-191731.frd")
 
 #-------------------------------------------------------------------
 # Append user's service or algorithm into Kernel
