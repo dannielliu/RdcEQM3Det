@@ -17,7 +17,10 @@ bool DmpRdcAlgEQM::InitializePsd(){
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::ProcessThisEventPsd(){
+bool DmpRdcAlgEQM::ProcessThisEventPsd(const long &id){
+  if(fPsdBuf.find(id) == fPsdBuf.end()){
+    return false;
+  }
   //fEvtPsd->Reset();
   fPsdBuf.erase(fPsdBuf.begin());
   return true;

@@ -16,20 +16,17 @@
 //-------------------------------------------------------------------
 struct _HeaderNavig{
   _HeaderNavig():DataLength(0xffff){
-    PacketID[0] = 0x00;
-    PacketID[1] = 0xff;
     for(size_t i=0;i<8;++i){
       Time[i] = 0x00;
     }
   }
   _HeaderNavig(const _HeaderNavig &r){
-    PacketID[0] = r.PacketID[0];
-    PacketID[1] = r.PacketID[1];
+std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")"<<std::endl;
+    DataLength = r.DataLength;
     for(size_t i=0;i<8;++i){
       Time[i] = r.Time[i];
     }
   }
-  char      PacketID[2];    // 2 bytes, just use packageID[1], since it's the same as Fees' trigger
   unsigned short     DataLength;
   char      Time[8];
 };
@@ -38,7 +35,7 @@ struct _HeaderNavig{
 struct _FeeData{
   _FeeData(){}
   _FeeData(const _FeeData &r);
-  _FeeData(char *data,const short &bytes,const short &feeID,const short &runMode,const short &trigger,const unsigned char &pkgFlag=0xff,const short &trgFlag=1,const bool &crc=true);
+  _FeeData(char *data,const short &bytes,const short &feeID,const short &runMode,const short &trigger,const short &trgFlag,const char &pkgFlag,const bool &crc);
   ~_FeeData(){}
   DmpFeeNavig  Navigator;
   std::vector<char> Signal;
@@ -69,8 +66,8 @@ public:
   std::string GetInputPath()const{return fInDataName.stem().string();}
 
 private:    // for all
-  bool ReadDataIntoDataBuffer();
-  std::vector<short> fEventReady;
+  bool ReadDataIntoDataBuffer();    // read one e2250813
+  std::vector<long> fEventInBuf;    // Event ID: Event in Buffer
   /* 
    *    1. return true:
    *        1.1     read one 0xe2250813 into data buffer
@@ -86,16 +83,14 @@ private:    // for all
   short             fTotalFeeNo;    //
   std::ifstream     fFile;          // in data stream
   std::ofstream     fOutError;      // save error datas into Error_fInDataName
-  long              fMaxPkgNo;      // read how many 0xe2250813?
-  long              fCurrentPkgID;  // current package id
-  std::map<short,_HeaderNavig>  fHeaderBuf;
-  std::map<short,std::vector<_FeeData> >    fBgoBuf;
-  std::map<short,_FeeData>      fPsdBuf;
-  std::map<short,_FeeData>      fNudBuf;
+  std::map<long,_HeaderNavig>  fHeaderBuf;
+  std::map<long,std::vector<_FeeData> >    fBgoBuf;
+  std::map<long,std::vector<_FeeData> >    fPsdBuf;
+  std::map<long,_FeeData>      fNudBuf;
 
 private:
   DmpEvtHeader      *fEvtHeader;    // save me
-  bool ProcessThisEventHeader(const short &id);    // convert event header
+  bool ProcessThisEventHeader(const long &id);    // convert event header
   void PrintTime()const;
 
 private:    // Bgo
@@ -104,7 +99,7 @@ private:    // Bgo
 
   DmpEvtRawBgo      *fEvtBgo;       // Bgo outdata
   bool InitializeBgo();
-  bool ProcessThisEventBgo(const short &id);
+  bool ProcessThisEventBgo(const long &id);
 
 private:    // Psd
   std::string       fCNCTPathPsd;   // connector path
@@ -112,7 +107,7 @@ private:    // Psd
 
   DmpEvtRawPsd      *fEvtPsd;       // Psd outdata
   bool InitializePsd();
-  bool ProcessThisEventPsd(const short &id);
+  bool ProcessThisEventPsd(const long &id);
 
 private:    // Nud
   std::string       fCNCTPathNud;   // connector path
@@ -120,7 +115,7 @@ private:    // Nud
 
   DmpEvtRawNud      *fEvtNud;       // Nud outdata
   bool InitializeNud();
-  bool ProcessThisEventNud(const short &id);
+  bool ProcessThisEventNud(const long &id);
 };
 
 #endif

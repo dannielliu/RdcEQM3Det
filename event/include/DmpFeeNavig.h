@@ -22,26 +22,26 @@ public:
     FeeID = r.FeeID;
     RunMode = r.RunMode;
     Trigger = r.Trigger;
-    PackageFlag = r.PackageFlag;
     TriggerFlag = r.TriggerFlag;
+    PackageFlag = r.PackageFlag;
     CRCFlag = r.CRCFlag;
   }
   DmpFeeNavig& operator=(const DmpFeeNavig &r){
     FeeID = r.FeeID;
     RunMode = r.RunMode;
     Trigger = r.Trigger;
-    PackageFlag = r.PackageFlag;
     TriggerFlag = r.TriggerFlag;
+    PackageFlag = r.PackageFlag;
     CRCFlag = r.CRCFlag;
   }
-  DmpFeeNavig(const short &feeID,const short &runMode,const short &trigger,const unsigned char &pkgFlag,const short &trgFlag,const bool &crc):FeeID(feeID),RunMode(runMode),Trigger(trigger),PackageFlag(pkgFlag),TriggerFlag(trgFlag),CRCFlag(crc){}
+  DmpFeeNavig(const short &feeID,const short &runMode,const short &trigger,const short &trgFlag,const char &pkgFlag,const bool &crc):FeeID(feeID),RunMode(runMode),Trigger(trigger),TriggerFlag(trgFlag),PackageFlag(pkgFlag),CRCFlag(crc){}
 
   short FeeID;
   short RunMode;
   short Trigger;
-  unsigned char PackageFlag;
   short TriggerFlag;
-  bool CRCFlag;
+  char  PackageFlag;
+  bool  CRCFlag;
 
   ClassDef(DmpFeeNavig,1)
 };

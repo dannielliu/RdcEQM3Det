@@ -17,7 +17,10 @@ bool DmpRdcAlgEQM::InitializeNud(){
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::ProcessThisEventNud(){
+bool DmpRdcAlgEQM::ProcessThisEventNud(const long &id){
+  if(fNudBuf.find(id) == fNudBuf.end()){
+    return false;
+  }
   //fEvtNud->Reset();
   fNudBuf.erase(fNudBuf.begin());
   return true;

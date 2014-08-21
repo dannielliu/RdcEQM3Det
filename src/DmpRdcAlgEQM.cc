@@ -14,18 +14,17 @@
 
 //-------------------------------------------------------------------
 DmpRdcAlgEQM::DmpRdcAlgEQM()
- :DmpVAlg("Rdc/EQM"),fInDataName("NO"),fMaxPkgNo(-1),fCurrentPkgID(0),fEvtHeader(0),
+ :DmpVAlg("Rdc/EQM"),fInDataName("NO"),fEvtHeader(0),
   fCNCTPathBgo("NO"),fEvtBgo(0),
   fCNCTPathPsd("NO"),fEvtPsd(0),
   fCNCTPathNud("NO"),fEvtNud(0)
-  //fFeeNoStk(1),fCNCTPathStk("NO"),fEvtStk(0)
+  //fCNCTPathStk("NO"),fEvtStk(0)
 {
   OptMap.insert(std::make_pair("BinaryFile",    0));
   OptMap.insert(std::make_pair("Bgo/Connector", 1));
   OptMap.insert(std::make_pair("Psd/Connector", 4));
-  //OptMap.insert(std::make_pair("Stk/Connector", 5));
+  OptMap.insert(std::make_pair("Stk/Connector", 5));
   OptMap.insert(std::make_pair("Nud/Connector", 7));
-  OptMap.insert(std::make_pair("PackageNumber", 8));
 }
 
 //-------------------------------------------------------------------
@@ -33,11 +32,7 @@ DmpRdcAlgEQM::~DmpRdcAlgEQM(){
 }
 
 //-------------------------------------------------------------------
-#include <boost/lexical_cast.hpp>
 void DmpRdcAlgEQM::Set(const std::string &type, const std::string &argv){
-  if(OptMap.find(type) == OptMap.end()){
-    DmpLogError<<"No argument type: "<<type<<DmpLogEndl;
-  }
 // *
 // *  TODO: if release, use DMPSWSYS
 // *
@@ -69,10 +64,9 @@ void DmpRdcAlgEQM::Set(const std::string &type, const std::string &argv){
       fCNCTPathNud = prefix+argv;
       break;
     }
-    case 8: // PackageNumber
+    default:
     {
-      fMaxPkgNo = boost::lexical_cast<long>(argv);
-      break;
+      DmpLogWarning<<"No argument type: "<<type<<DmpLogEndl;
     }
   }
 }
@@ -94,26 +88,27 @@ bool DmpRdcAlgEQM::Initialize(){
     return false;
   }
   bool bgo = InitializeBgo();
-  return bgo;
+  bool psd = InitializePsd();
+  bool nud = InitializeNud();
+  return (bgo&&psd&&nud);
 }
 
 //-------------------------------------------------------------------
 #include "DmpCore.h"
 bool DmpRdcAlgEQM::ProcessThisEvent(){
-  while(fEventReady.size() == 0){
-    if(not ReadDataIntoDataBuffer()){
-      if(fEventReady.size() == 0){      // last 0xe225 0813 not is a good event
-        gCore->TerminateRun();
-        return false;
-      }
+  while(fEventInBuf.size() == 0){
+    if(fFile.eof()){
+      DmpLogInfo<<"Reach the end of "<<fInDataName<<DmpLogEndl;
+      gCore->TerminateRun();
+      return false;
     }
+    ReadDataIntoDataBuffer();
   }
-  bool header = ProcessThisEventHeader(fEventReady.begin());
-  bool bgo = ProcessThisEventBgo(fEventReady.begin());
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")"<<std::endl;
-  bool psd = ProcessThisEventPsd(fEventReady.begin());
-  bool nud = ProcessThisEventNud(fEventReady.begin());
-  fEventReady.erase(fEventReady.begin());
+  bool header = ProcessThisEventHeader(*fEventInBuf.begin());
+  bool bgo = ProcessThisEventBgo(*fEventInBuf.begin());
+  bool psd = ProcessThisEventPsd(*fEventInBuf.begin());
+  bool nud = ProcessThisEventNud(*fEventInBuf.begin());
+  fEventInBuf.erase(fEventInBuf.begin());
   return (header && bgo && psd && nud);
 }
 
@@ -125,12 +120,12 @@ bool DmpRdcAlgEQM::Finalize(){
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::ProcessThisEventHeader(const short &id){
+bool DmpRdcAlgEQM::ProcessThisEventHeader(const long &id){
   if(fHeaderBuf.find(id) == fHeaderBuf.end()){
     return false;
   }
   fEvtHeader->Reset();
-  fEvtHeader->SetPackageID((short)(unsigned char)fHeaderBuf[id].PacketID[1]);
+  fEvtHeader->SetEventID(gCore->GetCurrentEventID());
   fEvtHeader->SetTime(&fHeaderBuf[id].Time[2]);
   fHeaderBuf.erase(id);
   return true;
@@ -189,19 +184,22 @@ unsigned short crc16_ccitt_tableH[256]={
  0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8,
  0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
-_FeeData::_FeeData(char *data,const short &bytes,const short &feeID,const short &runMode,const short &trigger,const unsigned char &pkgFlag,const short &trgFlag,const bool &crc):Navigator(feeID,runMode,trigger,pkgFlag,trgFlag,crc){
+_FeeData::_FeeData(char *data,const short &bytes,const short &feeID,const short &runMode,const short &trigger,const short &trgFlag,const char &pkgFlag,const bool &crc):Navigator(feeID,runMode,trigger,trgFlag,pkgFlag,crc){
   unsigned short crc_cal = 0xffff;
   for(short i=0;i<bytes;++i){
     crc_cal = (crc_cal<<8) ^ crc16_ccitt_tableH[((crc_cal>>8) ^ data[i]) & 0xff];
     Signal.push_back(data[i]);
   }
-  unsigned short crc_in = (unsigned short)(unsigned char)Signal[Signal.size()-2]+(unsigned short)(unsigned char)Signal[Signal.size()-1];
+  unsigned short crc_in = (short)(unsigned char)Signal[Signal.size()-2]*256+(short)(unsigned char)Signal[Signal.size()-1];
   if(crc_cal != crc_in){
     Navigator.CRCFlag = false;
   }
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\tCRC_cal = "<<crc_cal<<" read = "<<(short)(unsigned char)Signal[Signal.size()-2]<<" "<<(short)(unsigned char)Signal[Signal.size()-1]<<"\tbytes = "<<bytes<<" size = "<<Signal.size()<<std::endl;
+std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\tCRC_cal = "<<crc_cal<<" read = "<<crc_in<<"\tbytes = "<<bytes<<" size = "<<Signal.size()<<std::endl;
   Signal.erase(Signal.begin(),Signal.begin()+2);  // 2 bytes for data length
   Signal.erase(Signal.end()-2,Signal.end());      // 2 bytes for CRC
+  Navigator.Trigger = (short)(unsigned char)Signal[Signal.size()-1];
+  Navigator.TriggerFlag = (short)(unsigned char)Signal[Signal.size()-2]>>4;
+  Signal.erase(Signal.end()-2,Signal.end());      // 2 bytes for trigger
 std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\tsize = "<<Signal.size()<<std::endl;
 }
 

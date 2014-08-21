@@ -55,7 +55,7 @@ bool DmpRdcAlgEQM::InitializeBgo(){
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::ProcessThisEventBgo(const short &id){
+bool DmpRdcAlgEQM::ProcessThisEventBgo(const long &id){
   if(fBgoBuf.find(id) == fBgoBuf.end()){
     return false;
   }
