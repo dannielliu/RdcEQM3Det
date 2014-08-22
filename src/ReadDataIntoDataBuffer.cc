@@ -52,7 +52,7 @@ bool DmpRdcAlgEQM::ReadDataIntoDataBuffer(){
           fFile.read((char*)(&crc),2);
           crc= htobe16(crc);
           _FeeData *newFee = new _FeeData(data,dataLength,crc);
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<") Fee type "<<std::hex<<newFee->Navigator.FeeID<<", Mode "<<newFee->Navigator.RunMode<<std::dec<<DmpLogEndl;
+          DmpLogInfo<<"Fee ID 0x"<<std::hex<<newFee->Navigator.FeeID<<", Mode "<<newFee->Navigator.RunMode<<std::dec<<DmpLogEndl;
           if(i==0){ // trigger check
             s_CurrentFeeTrg = newFee->Navigator.Trigger;
             if((s_LastFeeTrg != -1) && ((s_CurrentFeeTrg&(s_LastFeeTrg+1)) != s_CurrentFeeTrg)){    // trigger continuous

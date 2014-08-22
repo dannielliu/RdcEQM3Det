@@ -124,8 +124,6 @@ bool DmpRdcAlgEQM::ProcessThisEventHeader(const long &id){
   }
   fEvtHeader->SetEventID(gCore->GetCurrentEventID());
   fEvtHeader->SetTime(fHeaderBuf[id]->Time);
-  PrintTime();
-  std::cout<<std::hex<<fEvtHeader->GetSecond()<<"\t"<<fEvtHeader->GetMillisecond()<<std::dec<<std::endl;
   return true;
 }
 
@@ -136,6 +134,35 @@ void DmpRdcAlgEQM::PrintTime()const{
     std::cout<<std::hex<<"  "<<(short)(unsigned char)(--fHeaderBuf.end())->second->Time[i];
   }
   std::cout<<std::dec<<std::endl;
+}
+
+//-------------------------------------------------------------------
+void DmpRdcAlgEQM::EraseBuffer(const long &id){
+  if(fHeaderBuf.find(id) != fHeaderBuf.end()){
+    delete fHeaderBuf[id];
+    fHeaderBuf.erase(id);
+  }
+  if(fNudBuf.find(id) != fNudBuf.end()){
+    delete fNudBuf[id];
+    fNudBuf.erase(id);
+  }
+  if(fBgoBuf.find(id) != fBgoBuf.end()){
+    for(size_t i=0;i<fBgoBuf[id].size();++i){
+      delete fBgoBuf[id][i];
+    }
+    fBgoBuf.erase(id);
+  }
+  if(fPsdBuf.find(id) != fPsdBuf.end()){
+    for(size_t i=0;i<fPsdBuf[id].size();++i){
+      delete fPsdBuf[id][i];
+    }
+    fPsdBuf.erase(id);
+  }
+  for(size_t i=0;i<fEventInBuf.size();++i){
+    if(fEventInBuf[i] == id){
+      fEventInBuf.erase(fEventInBuf.begin()+i);
+    }
+  }
 }
 
 //-------------------------------------------------------------------
@@ -200,31 +227,3 @@ _FeeData::_FeeData(char *data,const short &bytes,const unsigned short &crc){
   Signal.erase(Signal.end()-2,Signal.end());        // 2 bytes for trigger
 }
 
-//-------------------------------------------------------------------
-void DmpRdcAlgEQM::EraseBuffer(const long &id){
-  if(fHeaderBuf.find(id) != fHeaderBuf.end()){
-    delete fHeaderBuf[id];
-    fHeaderBuf.erase(id);
-  }
-  if(fNudBuf.find(id) != fNudBuf.end()){
-    delete fNudBuf[id];
-    fNudBuf.erase(id);
-  }
-  if(fBgoBuf.find(id) != fBgoBuf.end()){
-    for(size_t i=0;i<fBgoBuf[id].size();++i){
-      delete fBgoBuf[id][i];
-    }
-    fBgoBuf.erase(id);
-  }
-  if(fPsdBuf.find(id) != fPsdBuf.end()){
-    for(size_t i=0;i<fPsdBuf[id].size();++i){
-      delete fPsdBuf[id][i];
-    }
-    fPsdBuf.erase(id);
-  }
-  for(size_t i=0;i<fEventInBuf.size();++i){
-    if(fEventInBuf[i] == id){
-      fEventInBuf.erase(fEventInBuf.begin()+i);
-    }
-  }
-}

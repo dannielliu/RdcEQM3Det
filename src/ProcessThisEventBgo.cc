@@ -31,8 +31,6 @@ bool DmpRdcAlgEQM::InitializeBgo(){
       DmpLogError<<"\t\treading cnct file ("<<iter->path().string()<<") failed"<<DmpLogEndl;
       cnctFile.close();
       return false;
-    }else{
-      std::cout<<"\t\treading cnct file: "<<iter->path().string();
     }
     cnctFile>>feeID;
     cnctFile>>channelNo;
@@ -45,7 +43,7 @@ bool DmpRdcAlgEQM::InitializeBgo(){
       fMapBgo.insert(std::make_pair(feeID*1000+channelID,DmpBgoBase::ConstructGlobalDynodeID(layerID,barID,sideID,dyID)));
     }
     cnctFile.close();
-    std::cout<<" Done. ID = "<<feeID<<"\tN_channel = "<<channelNo<<std::endl;
+    DmpLogInfo<<"\tReading cnct file: "<<iter->path().string()<<"\tDone. ID = "<<feeID<<"\tN_channel = "<<channelNo<<DmpLogEndl;
   }
   //-------------------------------------------------------------------
   fEvtBgo = new DmpEvtRawBgo();
@@ -62,17 +60,27 @@ bool DmpRdcAlgEQM::ProcessThisEventBgo(const long &id){
     return false;
   }
   fEvtBgo->Reset();
-  /*
   for(size_t i=0;i<DmpParameterBgo::kFeeNo;++i){
-    fEvtBgo->SetFeeNavigator(fBgoBuf[0][i]->Navigator);
-    short nChannel = 0;
-    if(DmpERunMode::kCompress == fBgoBuf[0][i]->Navigator.RunMode){
-      nChannel = fBgoBuf[0][i]->Signal.size();
-    }else if(DmpERunMode::k0Compress == fBgoBuf[0][i]->Navigator.RunMode || DmpERunMode::kCalDAC == fBgoBuf[0][i]->Navigator.RunMode){
+    fEvtBgo->SetFeeNavigator(fBgoBuf[id][i]->Navigator);
+    short feeID = fBgoBuf[id][i]->Navigator.FeeID;
+    if(DmpERunMode::kCompress == fBgoBuf[id][i]->Navigator.RunMode){
+      short nChannel = fBgoBuf[id][i]->Signal.size()/3;
+      for(size_t c=0;c<nChannel;++c){
+        short channelID = (short)(unsigned char)fBgoBuf[id][i]->Signal[3*c];
+        short v = (short)((fBgoBuf[id][i]->Signal[3*c+1]<<4) | fBgoBuf[id][i]->Signal[3*c+2]);
+        fEvtBgo->AppendSignal(fMapBgo[feeID*1000+channelID],v);
+      }
+    }else if(DmpERunMode::k0Compress == fBgoBuf[id][i]->Navigator.RunMode || DmpERunMode::kCalDAC == fBgoBuf[id][i]->Navigator.RunMode){
+      short nChannel = fBgoBuf[id][i]->Signal.size()/2;
+      for(size_t c=0;c<nChannel;++c){
+        short v = (short)((fBgoBuf[id][i]->Signal[2*c]<<4) | fBgoBuf[id][i]->Signal[2*c+1]);
+        fEvtBgo->AppendSignal(fMapBgo[feeID*1000+c],v);
+      }
+    }else{
+      DmpLogError<<" Wrong mode... FeeID = "<<std::hex<<fBgoBuf[id][i]->Navigator.FeeID<<"\tmode "<<fBgoBuf[id][i]->Navigator.RunMode<<std::dec<<std::endl;
     }
   }
   fEvtBgo->GenerateStatus();
-  */
   return true;
 }
 
