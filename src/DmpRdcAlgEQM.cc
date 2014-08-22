@@ -124,6 +124,8 @@ bool DmpRdcAlgEQM::ProcessThisEventHeader(const long &id){
   }
   fEvtHeader->SetEventID(gCore->GetCurrentEventID());
   fEvtHeader->SetTime(fHeaderBuf[id]->Time);
+  PrintTime();
+  std::cout<<std::hex<<fEvtHeader->GetSecond()<<"\t"<<fEvtHeader->GetMillisecond()<<std::dec<<std::endl;
   return true;
 }
 

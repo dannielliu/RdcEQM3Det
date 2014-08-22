@@ -21,10 +21,8 @@ public:
   void  SetEventID(const long &v) {fEventID=v;}     // one good event
   void  SetTime(char *time){
     fSecond = 0;
-    fMillisecond = 0;
     for(size_t i=0;i<4;++i){        // 4 bytes second
-      fSecond += (short)(unsigned char)time[i];
-      fSecond = fSecond<<4;
+      fSecond = fSecond *256 + (short)(unsigned char)time[i];
     }
     fMillisecond = (short)(unsigned char)time[4]*256 + (short)(unsigned char)time[5];          // 2 bytes millisecond
   }
