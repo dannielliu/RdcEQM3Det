@@ -149,34 +149,4 @@ void DmpRdcAlgEQM::Exception(const int &endOfLastE2250813,const std::string &e){
   EraseBuffer(fGoodRawEventID);
 }
 
-//-------------------------------------------------------------------
-void DmpRdcAlgEQM::EraseBuffer(const long &id){
-  if(fHeaderBuf.find(id) != fHeaderBuf.end()){
-    delete fHeaderBuf[id];
-    fHeaderBuf.erase(id);
-  }
-  if(fNudBuf.find(id) != fNudBuf.end()){
-    delete fNudBuf[id];
-    fNudBuf.erase(id);
-  }
-  if(fBgoBuf.find(id) != fBgoBuf.end()){
-    for(size_t i=0;i<fBgoBuf[id].size();++i){
-      delete fBgoBuf[id][i];
-    }
-    fBgoBuf.erase(id);
-  }
-  if(fPsdBuf.find(id) != fPsdBuf.end()){
-    for(size_t i=0;i<fPsdBuf[id].size();++i){
-      delete fPsdBuf[id][i];
-    }
-    fPsdBuf.erase(id);
-  }
-  for(size_t i=0;i<fEventInBuf.size();++i){
-    if(fEventInBuf[i] == id){
-      fEventInBuf.erase(fEventInBuf.begin()+i);
-    }
-  }
-}
-
-
 

@@ -119,13 +119,11 @@ bool DmpRdcAlgEQM::Finalize(){
 //-------------------------------------------------------------------
 bool DmpRdcAlgEQM::ProcessThisEventHeader(const long &id){
   if(fHeaderBuf.find(id) == fHeaderBuf.end()){
+  std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<") not find "<<id<<std::endl;
     return false;
   }
-  fEvtHeader->Reset();
   fEvtHeader->SetEventID(gCore->GetCurrentEventID());
   fEvtHeader->SetTime(fHeaderBuf[id]->Time);
-  delete fHeaderBuf[id];
-  fHeaderBuf.erase(id);
   return true;
 }
 
@@ -188,7 +186,6 @@ _FeeData::_FeeData(char *data,const short &bytes,const unsigned short &crc){
     crc_cal = (crc_cal<<8) ^ crc16_ccitt_tableH[((crc_cal>>8) ^ (unsigned char)data[i]) & 0xff];
     Signal.push_back(data[i]);
   }
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\tcal = "<<crc_cal<<"\tread = "<<crc<<std::endl;
   if(crc_cal != crc){
     Navigator.CRCFlag = false;
   }
@@ -201,3 +198,31 @@ std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\tcal = "<<crc_cal<<"\tread = "
   Signal.erase(Signal.end()-2,Signal.end());        // 2 bytes for trigger
 }
 
+//-------------------------------------------------------------------
+void DmpRdcAlgEQM::EraseBuffer(const long &id){
+  if(fHeaderBuf.find(id) != fHeaderBuf.end()){
+    delete fHeaderBuf[id];
+    fHeaderBuf.erase(id);
+  }
+  if(fNudBuf.find(id) != fNudBuf.end()){
+    delete fNudBuf[id];
+    fNudBuf.erase(id);
+  }
+  if(fBgoBuf.find(id) != fBgoBuf.end()){
+    for(size_t i=0;i<fBgoBuf[id].size();++i){
+      delete fBgoBuf[id][i];
+    }
+    fBgoBuf.erase(id);
+  }
+  if(fPsdBuf.find(id) != fPsdBuf.end()){
+    for(size_t i=0;i<fPsdBuf[id].size();++i){
+      delete fPsdBuf[id][i];
+    }
+    fPsdBuf.erase(id);
+  }
+  for(size_t i=0;i<fEventInBuf.size();++i){
+    if(fEventInBuf[i] == id){
+      fEventInBuf.erase(fEventInBuf.begin()+i);
+    }
+  }
+}

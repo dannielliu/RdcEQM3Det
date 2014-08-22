@@ -15,14 +15,16 @@ class DmpEvtHeader : public TObject{
  *
 */
 public:
-  DmpEvtHeader(){Reset();}
+  DmpEvtHeader():fEventID(-1),fSecond(-1),fMillisecond(-1){}
   ~DmpEvtHeader(){}
 
-  void  Reset(){fSecond=0;fMillisecond=-1;}                // invoke it at the begin of Rdc::ProcessThisEvent
   void  SetEventID(const long &v) {fEventID=v;}     // one good event
   void  SetTime(char *time){
+    fSecond = 0;
+    fMillisecond = 0;
     for(size_t i=0;i<4;++i){        // 4 bytes second
-      fSecond = fSecond*256 + (short)(unsigned char)time[i];
+      fSecond += (short)(unsigned char)time[i];
+      fSecond = fSecond<<4;
     }
     fMillisecond = (short)(unsigned char)time[4]*256 + (short)(unsigned char)time[5];          // 2 bytes millisecond
   }
