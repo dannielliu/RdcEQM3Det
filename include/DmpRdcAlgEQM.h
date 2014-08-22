@@ -16,26 +16,25 @@
 //-------------------------------------------------------------------
 struct _HeaderNavig{
   _HeaderNavig():DataLength(0xffff){
-    for(size_t i=0;i<8;++i){
+    for(size_t i=0;i<6;++i){
       Time[i] = 0x00;
     }
   }
-  _HeaderNavig(const _HeaderNavig &r){
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")"<<std::endl;
-    DataLength = r.DataLength;
-    for(size_t i=0;i<8;++i){
-      Time[i] = r.Time[i];
+  _HeaderNavig(const unsigned short &dl,char *t){
+    DataLength = dl;
+    for(size_t i=0;i<6;++i){
+      Time[i] = t[i];
     }
   }
   unsigned short     DataLength;
-  char      Time[8];
+  char      Time[6];
 };
 
 //-------------------------------------------------------------------
 struct _FeeData{
   _FeeData(){}
   _FeeData(const _FeeData &r);
-  _FeeData(char *data,const short &bytes,const short &feeID,const short &runMode,const short &trigger,const short &trgFlag,const char &pkgFlag,const bool &crc);
+  _FeeData(char *data,const short &bytes,const unsigned short &crc);
   ~_FeeData(){}
   DmpFeeNavig  Navigator;
   std::vector<char> Signal;
@@ -78,15 +77,16 @@ private:    // for all
   bool CheckE2250813DataLength(const int &nBytes);
   bool CheckEb90DataLength(const int &nBytes);
   void Exception(const int &b,const std::string &e);     // throw whole data of e2250813 into fOutError
+  void EraseBuffer(const long &id);
 
   boost::filesystem::path   fInDataName;    // input data name
-  short             fTotalFeeNo;    //
+  long              fCurrentEventID;        // get it from DmpCore
   std::ifstream     fFile;          // in data stream
   std::ofstream     fOutError;      // save error datas into Error_fInDataName
-  std::map<long,_HeaderNavig>  fHeaderBuf;
-  std::map<long,std::vector<_FeeData> >    fBgoBuf;
-  std::map<long,std::vector<_FeeData> >    fPsdBuf;
-  std::map<long,_FeeData>      fNudBuf;
+  std::map<long,_HeaderNavig*>      fHeaderBuf;
+  std::map<long,std::vector<_FeeData*> >    fBgoBuf;
+  std::map<long,std::vector<_FeeData*> >    fPsdBuf;
+  std::map<long,_FeeData*>      fNudBuf;
 
 private:
   DmpEvtHeader      *fEvtHeader;    // save me

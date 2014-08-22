@@ -17,7 +17,7 @@ class DmpFeeNavig : public TObject{
  *
  */
 public:
-  DmpFeeNavig():FeeID(-1),RunMode(-1),Trigger(-1),PackageFlag(0xff),TriggerFlag(-1),CRCFlag(true){}
+  DmpFeeNavig():FeeID(-1),RunMode(3),Trigger(-1),PackageFlag(0xff),TriggerFlag(-1),CRCFlag(true){}
   DmpFeeNavig(const DmpFeeNavig &r){
     FeeID = r.FeeID;
     RunMode = r.RunMode;

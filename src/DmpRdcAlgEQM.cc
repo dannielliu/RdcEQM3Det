@@ -8,13 +8,10 @@
 #include "DmpEvtHeader.h"
 #include "DmpDataBuffer.h"
 #include "DmpRdcAlgEQM.h"
-#include "DmpParameterBgo.h"
-#include "DmpParameterPsd.h"
-#include "DmpParameterNud.h"
 
 //-------------------------------------------------------------------
 DmpRdcAlgEQM::DmpRdcAlgEQM()
- :DmpVAlg("Rdc/EQM"),fInDataName("NO"),fEvtHeader(0),
+ :DmpVAlg("Rdc/EQM"),fInDataName("NO"),fCurrentEventID(-1),fEvtHeader(0),
   fCNCTPathBgo("NO"),fEvtBgo(0),
   fCNCTPathPsd("NO"),fEvtPsd(0),
   fCNCTPathNud("NO"),fEvtNud(0)
@@ -82,7 +79,6 @@ bool DmpRdcAlgEQM::Initialize(){
     DmpLogInfo<<"Reading "<<fInDataName.string()<<"\tError data in "<<name<<DmpLogEndl;
     fOutError.open(name.c_str(),std::ios::out|std::ios::binary);
   }
-  fTotalFeeNo = DmpParameterBgo::kFeeNo+DmpParameterNud::kFeeNo+DmpParameterPsd::kFeeNo;
   fEvtHeader = new DmpEvtHeader();
   if(not gDataBuffer->RegisterObject("Event/Rdc/EventHeader",fEvtHeader,"DmpEvtHeader")){
     return false;
@@ -96,6 +92,7 @@ bool DmpRdcAlgEQM::Initialize(){
 //-------------------------------------------------------------------
 #include "DmpCore.h"
 bool DmpRdcAlgEQM::ProcessThisEvent(){
+  fCurrentEventID = gCore->GetCurrentEventID();
   while(fEventInBuf.size() == 0){
     if(fFile.eof()){
       DmpLogInfo<<"Reach the end of "<<fInDataName<<DmpLogEndl;
@@ -108,7 +105,7 @@ bool DmpRdcAlgEQM::ProcessThisEvent(){
   bool bgo = ProcessThisEventBgo(*fEventInBuf.begin());
   bool psd = ProcessThisEventPsd(*fEventInBuf.begin());
   bool nud = ProcessThisEventNud(*fEventInBuf.begin());
-  fEventInBuf.erase(fEventInBuf.begin());
+  EraseBuffer(*fEventInBuf.begin());
   return (header && bgo && psd && nud);
 }
 
@@ -126,7 +123,8 @@ bool DmpRdcAlgEQM::ProcessThisEventHeader(const long &id){
   }
   fEvtHeader->Reset();
   fEvtHeader->SetEventID(gCore->GetCurrentEventID());
-  fEvtHeader->SetTime(&fHeaderBuf[id].Time[2]);
+  fEvtHeader->SetTime(fHeaderBuf[id]->Time);
+  delete fHeaderBuf[id];
   fHeaderBuf.erase(id);
   return true;
 }
@@ -134,8 +132,8 @@ bool DmpRdcAlgEQM::ProcessThisEventHeader(const long &id){
 //-------------------------------------------------------------------
 void DmpRdcAlgEQM::PrintTime()const{
   std::cout<<"  Time:";
-  for(size_t i=2;i<8;++i){
-    std::cout<<std::hex<<"  "<<(short)(unsigned char)fHeaderBuf.end()->second.Time[i];
+  for(size_t i=0;i<6;++i){
+    std::cout<<std::hex<<"  "<<(short)(unsigned char)(--fHeaderBuf.end())->second->Time[i];
   }
   std::cout<<std::dec<<std::endl;
 }
@@ -184,22 +182,22 @@ unsigned short crc16_ccitt_tableH[256]={
  0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8,
  0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
-_FeeData::_FeeData(char *data,const short &bytes,const short &feeID,const short &runMode,const short &trigger,const short &trgFlag,const char &pkgFlag,const bool &crc):Navigator(feeID,runMode,trigger,trgFlag,pkgFlag,crc){
+_FeeData::_FeeData(char *data,const short &bytes,const unsigned short &crc){
   unsigned short crc_cal = 0xffff;
   for(short i=0;i<bytes;++i){
-    crc_cal = (crc_cal<<8) ^ crc16_ccitt_tableH[((crc_cal>>8) ^ data[i]) & 0xff];
+    crc_cal = (crc_cal<<8) ^ crc16_ccitt_tableH[((crc_cal>>8) ^ (unsigned char)data[i]) & 0xff];
     Signal.push_back(data[i]);
   }
-  unsigned short crc_in = (short)(unsigned char)Signal[Signal.size()-2]*256+(short)(unsigned char)Signal[Signal.size()-1];
-  if(crc_cal != crc_in){
+std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\tcal = "<<crc_cal<<"\tread = "<<crc<<std::endl;
+  if(crc_cal != crc){
     Navigator.CRCFlag = false;
   }
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\tCRC_cal = "<<crc_cal<<" read = "<<crc_in<<"\tbytes = "<<bytes<<" size = "<<Signal.size()<<std::endl;
-  Signal.erase(Signal.begin(),Signal.begin()+2);  // 2 bytes for data length
-  Signal.erase(Signal.end()-2,Signal.end());      // 2 bytes for CRC
+  Navigator.PackageFlag = Signal[0];
+  Navigator.RunMode = Signal[1]>>6;
+  Navigator.FeeID = Signal[1]&0x003f; // &0011 1111
+  Signal.erase(Signal.begin(),Signal.begin()+4);    // NOTE: 1 byte pkgFlag, 1 byte runMode_feeID, 2 bytes for data length
   Navigator.Trigger = (short)(unsigned char)Signal[Signal.size()-1];
   Navigator.TriggerFlag = (short)(unsigned char)Signal[Signal.size()-2]>>4;
-  Signal.erase(Signal.end()-2,Signal.end());      // 2 bytes for trigger
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\tsize = "<<Signal.size()<<std::endl;
+  Signal.erase(Signal.end()-2,Signal.end());        // 2 bytes for trigger
 }
 

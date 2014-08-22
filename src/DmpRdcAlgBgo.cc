@@ -62,15 +62,14 @@ bool DmpRdcAlgEQM::ProcessThisEventBgo(const long &id){
   fEvtBgo->Reset();
   short nFee = fBgoBuf[0].size();
   for(size_t i=0;i<nFee;++i){
-    fEvtBgo->SetFeeNavigator(fBgoBuf[0][i].Navigator);
+    fEvtBgo->SetFeeNavigator(fBgoBuf[0][i]->Navigator);
     short nChannel = 0;
-    if(DmpERunMode::kCompress == fBgoBuf[0][i].Navigator.RunMode){
-      nChannel = fBgoBuf[0][i].Signal.size();
-    }else if(DmpERunMode::k0Compress == fBgoBuf[0][i].Navigator.RunMode || DmpERunMode::kCalDAC == fBgoBuf[0][i].Navigator.RunMode){
+    if(DmpERunMode::kCompress == fBgoBuf[0][i]->Navigator.RunMode){
+      nChannel = fBgoBuf[0][i]->Signal.size();
+    }else if(DmpERunMode::k0Compress == fBgoBuf[0][i]->Navigator.RunMode || DmpERunMode::kCalDAC == fBgoBuf[0][i]->Navigator.RunMode){
     }
   }
   //fEvtBgo->GenerateStatus();
-  fBgoBuf.erase(fBgoBuf.begin());
   return true;
 }
 
