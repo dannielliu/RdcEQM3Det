@@ -8,6 +8,7 @@
 #include "DmpEvtRawPsd.h"
 #include "DmpDataBuffer.h"
 #include "DmpRdcAlgEQM.h"
+#include "DmpParameterPsd.h"
 
 //-------------------------------------------------------------------
 #include <boost/filesystem/path.hpp>
@@ -19,10 +20,10 @@ bool DmpRdcAlgEQM::InitializePsd(){
 //-------------------------------------------------------------------
 bool DmpRdcAlgEQM::ProcessThisEventPsd(const long &id){
   if(fPsdBuf.find(id) == fPsdBuf.end()){
+  std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<") not find "<<id<<std::endl;
     return false;
   }
   //fEvtPsd->Reset();
-  fPsdBuf.erase(fPsdBuf.begin());
   return true;
 }
 

@@ -80,7 +80,7 @@ private:    // for all
   void EraseBuffer(const long &id);
 
   boost::filesystem::path   fInDataName;    // input data name
-  long              fCurrentEventID;        // get it from DmpCore
+  long              fGoodRawEventID;    // good event id, find from raw data(one e2250813 or many e2250813)
   std::ifstream     fFile;          // in data stream
   std::ofstream     fOutError;      // save error datas into Error_fInDataName
   std::map<long,_HeaderNavig*>      fHeaderBuf;

@@ -11,7 +11,7 @@
 
 //-------------------------------------------------------------------
 DmpRdcAlgEQM::DmpRdcAlgEQM()
- :DmpVAlg("Rdc/EQM"),fInDataName("NO"),fCurrentEventID(-1),fEvtHeader(0),
+ :DmpVAlg("Rdc/EQM"),fInDataName("NO"),fGoodRawEventID(0),fEvtHeader(0),
   fCNCTPathBgo("NO"),fEvtBgo(0),
   fCNCTPathPsd("NO"),fEvtPsd(0),
   fCNCTPathNud("NO"),fEvtNud(0)
@@ -92,7 +92,6 @@ bool DmpRdcAlgEQM::Initialize(){
 //-------------------------------------------------------------------
 #include "DmpCore.h"
 bool DmpRdcAlgEQM::ProcessThisEvent(){
-  fCurrentEventID = gCore->GetCurrentEventID();
   while(fEventInBuf.size() == 0){
     if(fFile.eof()){
       DmpLogInfo<<"Reach the end of "<<fInDataName<<DmpLogEndl;
@@ -101,11 +100,12 @@ bool DmpRdcAlgEQM::ProcessThisEvent(){
     }
     ReadDataIntoDataBuffer();
   }
-  bool header = ProcessThisEventHeader(*fEventInBuf.begin());
-  bool bgo = ProcessThisEventBgo(*fEventInBuf.begin());
-  bool psd = ProcessThisEventPsd(*fEventInBuf.begin());
-  bool nud = ProcessThisEventNud(*fEventInBuf.begin());
-  EraseBuffer(*fEventInBuf.begin());
+  long eventID = gCore->GetCurrentEventID();
+  bool header = ProcessThisEventHeader(eventID);
+  bool bgo = ProcessThisEventBgo(eventID);
+  bool psd = ProcessThisEventPsd(eventID);
+  bool nud = ProcessThisEventNud(eventID);
+  EraseBuffer(eventID);
   return (header && bgo && psd && nud);
 }
 

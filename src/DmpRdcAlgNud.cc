@@ -8,6 +8,7 @@
 #include "DmpEvtRawNud.h"
 #include "DmpDataBuffer.h"
 #include "DmpRdcAlgEQM.h"
+#include "DmpParameterNud.h"
 
 //-------------------------------------------------------------------
 #include <boost/filesystem/path.hpp>
@@ -19,10 +20,10 @@ bool DmpRdcAlgEQM::InitializeNud(){
 //-------------------------------------------------------------------
 bool DmpRdcAlgEQM::ProcessThisEventNud(const long &id){
   if(fNudBuf.find(id) == fNudBuf.end()){
+  std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<") not find "<<id<<std::endl;
     return false;
   }
   //fEvtNud->Reset();
-  fNudBuf.erase(fNudBuf.begin());
   return true;
 }
 

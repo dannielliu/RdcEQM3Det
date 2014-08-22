@@ -1,5 +1,5 @@
 /*
- *  $Id: DmpRdcAlgBgo.cc, 2014-08-20 21:20:24 DAMPE $
+ *  $Id: DmpRdcAlgBgo.cc, 2014-08-22 17:05:06 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 09/03/2014
  *    Yifeng WEI (weiyf@mail.ustc.edu.cn) 24/04/2014
@@ -9,6 +9,7 @@
 #include "DmpDataBuffer.h"
 #include "DmpRdcAlgEQM.h"
 #include "DmpBgoBase.h"
+#include "DmpParameterBgo.h"
 
 //-------------------------------------------------------------------
 #include <boost/filesystem/path.hpp>
@@ -57,11 +58,12 @@ bool DmpRdcAlgEQM::InitializeBgo(){
 //-------------------------------------------------------------------
 bool DmpRdcAlgEQM::ProcessThisEventBgo(const long &id){
   if(fBgoBuf.find(id) == fBgoBuf.end()){
+  std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<") not find "<<id<<std::endl;
     return false;
   }
   fEvtBgo->Reset();
-  short nFee = fBgoBuf[0].size();
-  for(size_t i=0;i<nFee;++i){
+  /*
+  for(size_t i=0;i<DmpParameterBgo::kFeeNo;++i){
     fEvtBgo->SetFeeNavigator(fBgoBuf[0][i]->Navigator);
     short nChannel = 0;
     if(DmpERunMode::kCompress == fBgoBuf[0][i]->Navigator.RunMode){
@@ -69,7 +71,8 @@ bool DmpRdcAlgEQM::ProcessThisEventBgo(const long &id){
     }else if(DmpERunMode::k0Compress == fBgoBuf[0][i]->Navigator.RunMode || DmpERunMode::kCalDAC == fBgoBuf[0][i]->Navigator.RunMode){
     }
   }
-  //fEvtBgo->GenerateStatus();
+  fEvtBgo->GenerateStatus();
+  */
   return true;
 }
 

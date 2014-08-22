@@ -14,7 +14,6 @@
 bool DmpRdcAlgEQM::ReadDataIntoDataBuffer(){
   static short s_LastPkgID = -1, s_LastFeeTrg = -1, s_CurrentFeeTrg = 0;
   static short s_TotalFeeNo = DmpParameterBgo::kFeeNo+DmpParameterNud::kFeeNo+DmpParameterPsd::kFeeNo;
-
   unsigned int scientificHeader = 0;         // 4 bytes 0xe225 0813
   fFile.read((char*)(&scientificHeader),4);
   while(0xe2250813 != htobe32(scientificHeader)){
@@ -37,7 +36,7 @@ bool DmpRdcAlgEQM::ReadDataIntoDataBuffer(){
   fFile.read(time,8);
   if(CheckE2250813DataLength(dataLength)){    // will find next 0xe2250813 as expected
   _HeaderNavig *newEvt = new _HeaderNavig(dataLength,&time[2]);
-  fHeaderBuf.insert(std::make_pair(fCurrentEventID,newEvt));
+  fHeaderBuf.insert(std::make_pair(fGoodRawEventID,newEvt));
     for(short i=0;i<s_TotalFeeNo;++i){
       unsigned short feeHeader = 0;
       fFile.read((char*)(&feeHeader),2);
@@ -69,11 +68,11 @@ std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<") Fee type "<<std::hex<<newFee->
           short detectorID = (newFee->Navigator.FeeID>>4)&0x03;
           if(newFee->Navigator.CRCFlag){   // CRC check
             if(DmpEDetectorID::kBgo == detectorID){
-              fBgoBuf[fCurrentEventID].push_back(newFee);
+              fBgoBuf[fGoodRawEventID].push_back(newFee);
             }else if(DmpEDetectorID::kPsd == detectorID){
-              fPsdBuf[fCurrentEventID].push_back(newFee);
+              fPsdBuf[fGoodRawEventID].push_back(newFee);
             }else if(DmpEDetectorID::kNud == detectorID){
-              fNudBuf[fCurrentEventID] = newFee;
+              fNudBuf[fGoodRawEventID] = newFee;
             }else if(DmpEDetectorID::kStk == detectorID){
               // *
               // *  TODO: 
@@ -95,13 +94,13 @@ std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<") Fee type "<<std::hex<<newFee->
         return false;
       }
     }
-    //fOneEventReady = true;
   }else{
     Exception(endOfLastHeader,"Data length error [0xe2250813]");
     return false;
   }
   // check buffer, has current event? TODO: for Stk?
-  fEventInBuf.push_back(fCurrentEventID);
+  fEventInBuf.push_back(fGoodRawEventID);
+  ++fGoodRawEventID;
   return true;
 }
 
@@ -147,7 +146,7 @@ void DmpRdcAlgEQM::Exception(const int &endOfLastE2250813,const std::string &e){
   fFile.read(errorData,nBytes);
   fOutError.write(errorData,nBytes);
   delete[] errorData;
-  EraseBuffer(fCurrentEventID);
+  EraseBuffer(fGoodRawEventID);
 }
 
 //-------------------------------------------------------------------
@@ -155,6 +154,10 @@ void DmpRdcAlgEQM::EraseBuffer(const long &id){
   if(fHeaderBuf.find(id) != fHeaderBuf.end()){
     delete fHeaderBuf[id];
     fHeaderBuf.erase(id);
+  }
+  if(fNudBuf.find(id) != fNudBuf.end()){
+    delete fNudBuf[id];
+    fNudBuf.erase(id);
   }
   if(fBgoBuf.find(id) != fBgoBuf.end()){
     for(size_t i=0;i<fBgoBuf[id].size();++i){
@@ -168,9 +171,12 @@ void DmpRdcAlgEQM::EraseBuffer(const long &id){
     }
     fPsdBuf.erase(id);
   }
-  if(fNudBuf.find(id) != fNudBuf.end()){
-    delete fNudBuf[id];
-    fNudBuf.erase(id);
+  for(size_t i=0;i<fEventInBuf.size();++i){
+    if(fEventInBuf[i] == id){
+      fEventInBuf.erase(fEventInBuf.begin()+i);
+    }
   }
 }
+
+
 
