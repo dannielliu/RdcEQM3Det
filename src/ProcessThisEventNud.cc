@@ -1,5 +1,5 @@
 /*
- *  $Id: DmpRdcAlgNud.cc, 2014-08-20 15:18:00 DAMPE $
+ *  $Id: ProcessThisEventNud.cc, 2014-08-22 17:12:37 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 09/03/2014
  *    Yifeng WEI (weiyf@mail.ustc.edu.cn) 24/04/2014
