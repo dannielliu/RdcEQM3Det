@@ -22,7 +22,7 @@ namespace DmpEPackageFlag{
 //-------------------------------------------------------------------
 namespace DmpERunMode{
   enum Type{
-    k0Compress = 0,
+    kOriginal = 0,
     kCompress = 1,
     kCalDAC = 2,
     kUnknow = 3

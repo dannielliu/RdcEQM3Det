@@ -70,7 +70,7 @@ bool DmpRdcAlgEQM::ProcessThisEventBgo(const long &id){
         short v = (short)((fBgoBuf[id][i]->Signal[3*c+1]<<4) | fBgoBuf[id][i]->Signal[3*c+2]);
         fEvtBgo->AppendSignal(fMapBgo[feeID*1000+channelID],v);
       }
-    }else if(DmpERunMode::k0Compress == fBgoBuf[id][i]->Navigator.RunMode || DmpERunMode::kCalDAC == fBgoBuf[id][i]->Navigator.RunMode){
+    }else if(DmpERunMode::kOriginal == fBgoBuf[id][i]->Navigator.RunMode || DmpERunMode::kCalDAC == fBgoBuf[id][i]->Navigator.RunMode){
       short nChannel = fBgoBuf[id][i]->Signal.size()/2;
       for(size_t c=0;c<nChannel;++c){
         short v = (short)((fBgoBuf[id][i]->Signal[2*c]<<4) | fBgoBuf[id][i]->Signal[2*c+1]);
