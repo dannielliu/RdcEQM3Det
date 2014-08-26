@@ -28,7 +28,7 @@ env.ParseConfig("root-config --cflags --libs")
 #-------------------------------------------------------------------
 # include dir. and external libs
 env.Prepend(CPPPATH=['./include'])
-env.Append(LIBS=['DmpBgoBase','DmpEventRaw'])
+env.Append(LIBS=['DmpBase','DmpEventRaw'])
 
 #-------------------------------------------------------------------
 # main build
