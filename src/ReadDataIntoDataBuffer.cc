@@ -34,9 +34,9 @@ bool DmpRdcAlgEQM::ReadDataIntoDataBuffer(){
   dataLength = htobe16(dataLength);
   char time[8];
   fFile.read(time,8);
-  if(CheckE2250813DataLength(dataLength)){    // will find next 0xe2250813 as expected
   _HeaderNavig *newEvt = new _HeaderNavig(dataLength,&time[2]);
   fHeaderBuf.insert(std::make_pair(fGoodRawEventID,newEvt));
+  if(CheckE2250813DataLength(dataLength)){    // will find next 0xe2250813 as expected
     for(short i=0;i<s_TotalFeeNo;++i){
       unsigned short feeHeader = 0;
       fFile.read((char*)(&feeHeader),2);
@@ -52,7 +52,7 @@ bool DmpRdcAlgEQM::ReadDataIntoDataBuffer(){
           fFile.read((char*)(&crc),2);
           crc= htobe16(crc);
           _FeeData *newFee = new _FeeData(data,dataLength,crc);
-          DmpLogInfo<<"Fee ID 0x"<<std::hex<<newFee->Navigator.FeeID<<", Mode "<<newFee->Navigator.RunMode<<std::dec<<DmpLogEndl;
+          //DmpLogInfo<<"Fee ID 0x"<<std::hex<<newFee->Navigator.FeeID<<", Mode "<<newFee->Navigator.RunMode<<std::dec<<DmpLogEndl;
           if(i==0){ // trigger check
             s_CurrentFeeTrg = newFee->Navigator.Trigger;
             if((s_LastFeeTrg != -1) && ((s_CurrentFeeTrg&(s_LastFeeTrg+1)) != s_CurrentFeeTrg)){    // trigger continuous
@@ -61,6 +61,7 @@ bool DmpRdcAlgEQM::ReadDataIntoDataBuffer(){
             s_LastFeeTrg = s_CurrentFeeTrg;
           }else{
             if(newFee->Navigator.Trigger != s_CurrentFeeTrg){    // trigger match
+std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
               Exception(endOfLastHeader,"Trigger not match");
               return false;
             }
@@ -78,23 +79,28 @@ bool DmpRdcAlgEQM::ReadDataIntoDataBuffer(){
               // *  TODO: 
               // *
             }else{
+std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
               Exception(endOfLastHeader,"Fee type error");
               return false;
             }
           }else{
+std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
             Exception(endOfLastHeader,"CRC error");
             return false;
           }
         }else{
+std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
           Exception(endOfLastHeader,"Data length error [0xeb90]");
           return false;
         }
       }else{
+std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
         Exception(endOfLastHeader,"Not find 0xeb90");
         return false;
       }
     }
   }else{
+std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
     Exception(endOfLastHeader,"Data length error [0xe2250813]");
     return false;
   }

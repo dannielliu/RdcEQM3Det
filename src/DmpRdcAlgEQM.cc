@@ -129,7 +129,7 @@ bool DmpRdcAlgEQM::ProcessThisEventHeader(const long &id){
 
 //-------------------------------------------------------------------
 void DmpRdcAlgEQM::PrintTime()const{
-  std::cout<<"  Time:";
+  std::cout<<"  Time:"<<fHeaderBuf.size()<<"\t";
   for(size_t i=0;i<6;++i){
     std::cout<<std::hex<<"  "<<(short)(unsigned char)(--fHeaderBuf.end())->second->Time[i];
   }
