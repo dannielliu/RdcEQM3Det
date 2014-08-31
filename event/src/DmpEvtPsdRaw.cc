@@ -1,26 +1,26 @@
 /*
- *  $Id: DmpEvtRawPsd.cc, 2014-08-20 19:36:43 DAMPE $
+ *  $Id: DmpEvtPsdRaw.cc, 2014-08-20 19:36:43 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 24/04/2014
 */
 
 #include <iostream>
 
-#include "DmpEvtRawPsd.h"
+#include "DmpEvtPsdRaw.h"
 #include "DmpEFeeFlags.h"
 
 //-------------------------------------------------------------------
-DmpEvtRawPsd::DmpEvtRawPsd()
+DmpEvtPsdRaw::DmpEvtPsdRaw()
  :fTrigger(-1),fRunMode(-1),fIsGood(true)
 {
 }
 
 //-------------------------------------------------------------------
-DmpEvtRawPsd::~DmpEvtRawPsd(){
+DmpEvtPsdRaw::~DmpEvtPsdRaw(){
 }
 
 //-------------------------------------------------------------------
-void DmpEvtRawPsd::Reset(){
+void DmpEvtPsdRaw::Reset(){
   fFeeNavig.clear();
   fGlobalID.clear();
   fADC.clear();
@@ -28,7 +28,7 @@ void DmpEvtRawPsd::Reset(){
 }
 
 //-------------------------------------------------------------------
-void DmpEvtRawPsd::AppendSignal(const short &gid,const short &v){
+void DmpEvtPsdRaw::AppendSignal(const short &gid,const short &v){
   short n= fGlobalID.size();
   for(size_t i=0;i<n;++i){
     if(gid == fGlobalID[i]){
@@ -41,7 +41,7 @@ void DmpEvtRawPsd::AppendSignal(const short &gid,const short &v){
 }
 
 //-------------------------------------------------------------------
-void DmpEvtRawPsd::GenerateStatus(){
+void DmpEvtPsdRaw::GenerateStatus(){
   for(size_t i=0;i<fFeeNavig.size();++i){
     if(false ==  fFeeNavig[i].CRCFlag){
       fIsGood = false;
@@ -87,7 +87,7 @@ void DmpEvtRawPsd::GenerateStatus(){
 }
 
 //-------------------------------------------------------------------
-short DmpEvtRawPsd::GetSignal(const short &gid)const{
+short DmpEvtPsdRaw::GetSignal(const short &gid)const{
   short n= fGlobalID.size();
   for(size_t i=0;i<n;++i){
     if(gid == fGlobalID[i]){

@@ -5,7 +5,7 @@
  *    Yifeng WEI (weiyf@mail.ustc.edu.cn) 24/04/2014
 */
 
-#include "DmpEvtRawPsd.h"
+#include "DmpEvtPsdRaw.h"
 #include "DmpDataBuffer.h"
 #include "DmpAlgRdcEQM.h"
 #include "DmpParameterPsd.h"

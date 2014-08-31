@@ -41,9 +41,9 @@ struct _FeeData{
 };
 
 //-------------------------------------------------------------------
-class DmpEvtRawBgo;
-class DmpEvtRawPsd;
-class DmpEvtRawNud;
+class DmpEvtBgoRaw;
+class DmpEvtPsdRaw;
+class DmpEvtNudRaw;
 class DmpEvtHeader;
 
 class DmpAlgRdcEQM : public DmpVAlg{
@@ -97,7 +97,7 @@ private:    // Bgo
   std::string       fCNCTPathBgo;   // connector path
   std::map<short,short> fMapBgo;    // map of Bgo connector
 
-  DmpEvtRawBgo      *fEvtBgo;       // Bgo outdata
+  DmpEvtBgoRaw      *fEvtBgo;       // Bgo outdata
   bool InitializeBgo();
   bool ProcessThisEventBgo(const long &id);
 
@@ -105,7 +105,7 @@ private:    // Psd
   std::string       fCNCTPathPsd;   // connector path
   std::map<short,short> fMapPsd;    // map of Psd connector
 
-  DmpEvtRawPsd      *fEvtPsd;       // Psd outdata
+  DmpEvtPsdRaw      *fEvtPsd;       // Psd outdata
   bool InitializePsd();
   bool ProcessThisEventPsd(const long &id);
 
@@ -113,7 +113,7 @@ private:    // Nud
   std::string       fCNCTPathNud;   // connector path
   std::map<short,short> fMapNud;    // map of Nud connector
 
-  DmpEvtRawNud      *fEvtNud;       // Nud outdata
+  DmpEvtNudRaw      *fEvtNud;       // Nud outdata
   bool InitializeNud();
   bool ProcessThisEventNud(const long &id);
 };

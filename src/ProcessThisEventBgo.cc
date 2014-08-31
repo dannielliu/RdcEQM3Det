@@ -5,7 +5,7 @@
  *    Yifeng WEI (weiyf@mail.ustc.edu.cn) 24/04/2014
 */
 
-#include "DmpEvtRawBgo.h"
+#include "DmpEvtBgoRaw.h"
 #include "DmpDataBuffer.h"
 #include "DmpAlgRdcEQM.h"
 #include "DmpBgoBase.h"
@@ -46,8 +46,8 @@ bool DmpAlgRdcEQM::InitializeBgo(){
     DmpLogInfo<<"\tReading cnct file: "<<iter->path().string()<<"\tDone. ID = "<<feeID<<"\tN_channel = "<<channelNo<<DmpLogEndl;
   }
   //-------------------------------------------------------------------
-  fEvtBgo = new DmpEvtRawBgo();
-  if(not gDataBuffer->RegisterObject("Event/Rdc/Bgo",fEvtBgo,"DmpEvtRawBgo")){
+  fEvtBgo = new DmpEvtBgoRaw();
+  if(not gDataBuffer->RegisterObject("Event/Rdc/Bgo",fEvtBgo,"DmpEvtBgoRaw")){
     return false;
   }
   return true;

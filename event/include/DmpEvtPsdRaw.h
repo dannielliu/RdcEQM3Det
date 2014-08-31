@@ -1,19 +1,19 @@
 /*
- *  $Id: DmpEvtRawPsd.h, 2014-08-20 14:19:01 DAMPE $
+ *  $Id: DmpEvtPsdRaw.h, 2014-08-20 14:19:01 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 24/04/2014
 */
 
-#ifndef DmpEvtRawPsd_H
-#define DmpEvtRawPsd_H
+#ifndef DmpEvtPsdRaw_H
+#define DmpEvtPsdRaw_H
 
 #include <vector>
 #include "DmpFeeNavig.h"
 
 //-------------------------------------------------------------------
-class DmpEvtRawPsd : public TObject{
+class DmpEvtPsdRaw : public TObject{
 /*
- *  DmpEvtRawPsd
+ *  DmpEvtPsdRaw
  *
  *      this class is used to save output of Raw for Psd
  *
@@ -21,8 +21,8 @@ class DmpEvtRawPsd : public TObject{
  *
  */
 public:
-  DmpEvtRawPsd();
-  ~DmpEvtRawPsd();
+  DmpEvtPsdRaw();
+  ~DmpEvtPsdRaw();
   void  Reset();
   void  SetFeeNavigator(const DmpFeeNavig &s){fFeeNavig.push_back(s);}
   void  AppendSignal(const short &gid,const short &v);
@@ -54,7 +54,7 @@ private:
    */
   std::vector<short>    fADC;
 
-  ClassDef(DmpEvtRawPsd,1)
+  ClassDef(DmpEvtPsdRaw,1)
 };
 
 #endif

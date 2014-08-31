@@ -1,19 +1,19 @@
 /*
- *  $Id: DmpEvtRawBgo.h, 2014-08-22 17:45:40 DAMPE $
+ *  $Id: DmpEvtBgoRaw.h, 2014-08-22 17:45:40 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 24/04/2014
 */
 
-#ifndef DmpEvtRawBgo_H
-#define DmpEvtRawBgo_H
+#ifndef DmpEvtBgoRaw_H
+#define DmpEvtBgoRaw_H
 
 #include <vector>
 #include "DmpFeeNavig.h"
 
 //-------------------------------------------------------------------
-class DmpEvtRawBgo : public TObject{
+class DmpEvtBgoRaw : public TObject{
 /*
- *  DmpEvtRawBgo
+ *  DmpEvtBgoRaw
  *
  *      this class is used to save output of Raw for Bgo
  *
@@ -21,8 +21,8 @@ class DmpEvtRawBgo : public TObject{
  *
  */
 public:
-  DmpEvtRawBgo();
-  ~DmpEvtRawBgo();
+  DmpEvtBgoRaw();
+  ~DmpEvtBgoRaw();
   void  Reset();
   void  SetFeeNavigator(const DmpFeeNavig &s){fFeeNavig.push_back(s);}
   void  AppendSignal(const short &gid,const short &v);
@@ -54,7 +54,7 @@ private:
    */
   std::vector<short>    fADC;
 
-  ClassDef(DmpEvtRawBgo,1)
+  ClassDef(DmpEvtBgoRaw,1)
 };
 
 #endif

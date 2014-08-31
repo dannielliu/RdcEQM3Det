@@ -15,9 +15,9 @@
 #pragma link C++ class DmpFeeNavig+;
 //#pragma link C++ typedef V_DmpFeeNavig;
 
-#pragma link C++ class DmpEvtRawBgo+;
-#pragma link C++ class DmpEvtRawPsd+;
-#pragma link C++ class DmpEvtRawNud+;
+#pragma link C++ class DmpEvtBgoRaw+;
+#pragma link C++ class DmpEvtPsdRaw+;
+#pragma link C++ class DmpEvtNudRaw+;
 
 #endif
 

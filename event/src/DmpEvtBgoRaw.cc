@@ -1,26 +1,26 @@
 /*
- *  $Id: DmpEvtRawBgo.cc, 2014-08-20 19:36:43 DAMPE $
+ *  $Id: DmpEvtBgoRaw.cc, 2014-08-20 19:36:43 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 24/04/2014
 */
 
 #include <iostream>
 
-#include "DmpEvtRawBgo.h"
+#include "DmpEvtBgoRaw.h"
 #include "DmpEFeeFlags.h"
 
 //-------------------------------------------------------------------
-DmpEvtRawBgo::DmpEvtRawBgo()
+DmpEvtBgoRaw::DmpEvtBgoRaw()
  :fTrigger(-1),fRunMode(-1),fIsGood(true)
 {
 }
 
 //-------------------------------------------------------------------
-DmpEvtRawBgo::~DmpEvtRawBgo(){
+DmpEvtBgoRaw::~DmpEvtBgoRaw(){
 }
 
 //-------------------------------------------------------------------
-void DmpEvtRawBgo::Reset(){
+void DmpEvtBgoRaw::Reset(){
   fFeeNavig.clear();
   fGlobalDynodeID.clear();
   fADC.clear();
@@ -28,7 +28,7 @@ void DmpEvtRawBgo::Reset(){
 }
 
 //-------------------------------------------------------------------
-void DmpEvtRawBgo::AppendSignal(const short &gid,const short &v){
+void DmpEvtBgoRaw::AppendSignal(const short &gid,const short &v){
   short n= fGlobalDynodeID.size();
   /*
   for(size_t i=0;i<n;++i){
@@ -43,7 +43,7 @@ void DmpEvtRawBgo::AppendSignal(const short &gid,const short &v){
 }
 
 //-------------------------------------------------------------------
-void DmpEvtRawBgo::GenerateStatus(){
+void DmpEvtBgoRaw::GenerateStatus(){
 //-------------------------------------------------------------------
   short lastTrigger = fTrigger;
   fTrigger = fFeeNavig[0].Trigger;
@@ -76,7 +76,7 @@ void DmpEvtRawBgo::GenerateStatus(){
 }
 
 //-------------------------------------------------------------------
-short DmpEvtRawBgo::GetSignal(const short &gid)const{
+short DmpEvtBgoRaw::GetSignal(const short &gid)const{
   short n= fGlobalDynodeID.size();
   for(size_t i=0;i<n;++i){
     if(gid == fGlobalDynodeID[i]){

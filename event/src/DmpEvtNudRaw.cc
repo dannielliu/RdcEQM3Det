@@ -1,30 +1,30 @@
 /*
- *  $Id: DmpEvtRawNud.cc, 2014-08-20 17:49:42 DAMPE $
+ *  $Id: DmpEvtNudRaw.cc, 2014-08-20 17:49:42 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 24/04/2014
 */
 
 #include <iostream>
 
-#include "DmpEvtRawNud.h"
+#include "DmpEvtNudRaw.h"
 #include "DmpEFeeFlags.h"
 
 //-------------------------------------------------------------------
-DmpEvtRawNud::DmpEvtRawNud(){
+DmpEvtNudRaw::DmpEvtNudRaw(){
 }
 
 //-------------------------------------------------------------------
-DmpEvtRawNud::~DmpEvtRawNud(){
+DmpEvtNudRaw::~DmpEvtNudRaw(){
 }
 
 //-------------------------------------------------------------------
-void DmpEvtRawNud::Reset(){
+void DmpEvtNudRaw::Reset(){
   fGlobalID.clear();
   fADC.clear();
 }
 
 //-------------------------------------------------------------------
-void DmpEvtRawNud::AppendSignal(const short &b,const short &v){
+void DmpEvtNudRaw::AppendSignal(const short &b,const short &v){
 // *
 // *  TODO: 
 // *
@@ -40,7 +40,7 @@ void DmpEvtRawNud::AppendSignal(const short &b,const short &v){
 }
 
 //-------------------------------------------------------------------
-void DmpEvtRawNud::GenerateStatus(){
+void DmpEvtNudRaw::GenerateStatus(){
 //-------------------------------------------------------------------
   short lastTrigger = fFeeNavig.Trigger;
   if(-1 != lastTrigger && -1 != fFeeNavig.Trigger){
@@ -56,7 +56,7 @@ void DmpEvtRawNud::GenerateStatus(){
 }
 
 //-------------------------------------------------------------------
-short DmpEvtRawNud::GetSignal(const short &b)const{
+short DmpEvtNudRaw::GetSignal(const short &b)const{
   short n= fGlobalID.size();
   for(size_t i=0;i<n;++i){
     if(b == fGlobalID[i]){
