@@ -48,7 +48,7 @@ void DmpEvtRawBgo::GenerateStatus(){
   short lastTrigger = fTrigger;
   fTrigger = fFeeNavig[0].Trigger;
   if(-1 != lastTrigger && (lastTrigger+1 & fTrigger) != fTrigger){
-      std::cout<<" Bgo trigger not continuous:\t"<<lastTrigger<<"/"<<fTrigger<<std::endl;
+      std::cout<<" Bgo trigger not continuous:\t"<<lastTrigger<<"->"<<fTrigger<<std::endl;
   }
 //-------------------------------------------------------------------
   fRunMode = fFeeNavig[0].RunMode;
