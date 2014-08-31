@@ -10,7 +10,7 @@
 
 #-------------------------------------------------------------------
 import DMPSW                    # Load DAMPE software
-import libDmpRdcEQM as DmpRdcAlg
+import libDmpRdcEQM as RdcEQM
 
 #-------------------------------------------------------------------
 # Global setting
@@ -27,7 +27,7 @@ DMPSW.RootIOSvc.Set("OutData/WriteList","Event/Rdc/EventHeader;Event/Rdc/Bgo")  
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
-rdcAlgBT = DmpRdcAlg.DmpRdcAlgEQM()
+rdcAlgBT = RdcEQM.DmpAlgRdcEQM()
 #rdcAlgBT.Set("Psd/Connector","Psd/EQM")
 #rdcAlgBT.Set("Stk/Connector",Stk/EQM")
 rdcAlgBT.Set("Bgo/Connector","Bgo/EQM")

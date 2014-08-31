@@ -1,5 +1,5 @@
 /*
- *  $Id: DmpRdcAlgEQM.cc, 2014-08-13 10:57:04 DAMPE $
+ *  $Id: DmpAlgRdcEQM.cc, 2014-08-31 22:46:23 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 27/05/2014
 */
@@ -7,10 +7,10 @@
 #include <stdlib.h>     // getenv()
 #include "DmpEvtHeader.h"
 #include "DmpDataBuffer.h"
-#include "DmpRdcAlgEQM.h"
+#include "DmpAlgRdcEQM.h"
 
 //-------------------------------------------------------------------
-DmpRdcAlgEQM::DmpRdcAlgEQM()
+DmpAlgRdcEQM::DmpAlgRdcEQM()
  :DmpVAlg("Rdc/EQM"),fInDataName("NO"),fGoodRawEventID(0),fEvtHeader(0),
   fCNCTPathBgo("NO"),fEvtBgo(0),
   fCNCTPathPsd("NO"),fEvtPsd(0),
@@ -25,11 +25,11 @@ DmpRdcAlgEQM::DmpRdcAlgEQM()
 }
 
 //-------------------------------------------------------------------
-DmpRdcAlgEQM::~DmpRdcAlgEQM(){
+DmpAlgRdcEQM::~DmpAlgRdcEQM(){
 }
 
 //-------------------------------------------------------------------
-void DmpRdcAlgEQM::Set(const std::string &type, const std::string &argv){
+void DmpAlgRdcEQM::Set(const std::string &type, const std::string &argv){
 // *
 // *  TODO: if release, use DMPSWSYS
 // *
@@ -69,7 +69,7 @@ void DmpRdcAlgEQM::Set(const std::string &type, const std::string &argv){
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::Initialize(){
+bool DmpAlgRdcEQM::Initialize(){
   fFile.open(fInDataName.c_str(),std::ios::in|std::ios::binary);
   if(not fFile.good()){
     DmpLogError<<"Open "<<fInDataName<<" failed"<<DmpLogEndl;
@@ -91,7 +91,7 @@ bool DmpRdcAlgEQM::Initialize(){
 
 //-------------------------------------------------------------------
 #include "DmpCore.h"
-bool DmpRdcAlgEQM::ProcessThisEvent(){
+bool DmpAlgRdcEQM::ProcessThisEvent(){
   while(fEventInBuf.size() == 0){
     if(fFile.eof()){
       DmpLogInfo<<"Reach the end of "<<fInDataName<<DmpLogEndl;
@@ -110,14 +110,14 @@ bool DmpRdcAlgEQM::ProcessThisEvent(){
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::Finalize(){
+bool DmpAlgRdcEQM::Finalize(){
   fFile.close();
   fOutError.close();
   return true;
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::ProcessThisEventHeader(const long &id){
+bool DmpAlgRdcEQM::ProcessThisEventHeader(const long &id){
   if(fHeaderBuf.find(id) == fHeaderBuf.end()){
   std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<") not find "<<id<<std::endl;
     return false;
@@ -128,7 +128,7 @@ bool DmpRdcAlgEQM::ProcessThisEventHeader(const long &id){
 }
 
 //-------------------------------------------------------------------
-void DmpRdcAlgEQM::PrintTime()const{
+void DmpAlgRdcEQM::PrintTime()const{
   std::cout<<"  Time:"<<fHeaderBuf.size()<<"\t";
   for(size_t i=0;i<6;++i){
     std::cout<<std::hex<<"  "<<(short)(unsigned char)(--fHeaderBuf.end())->second->Time[i];
@@ -137,7 +137,7 @@ void DmpRdcAlgEQM::PrintTime()const{
 }
 
 //-------------------------------------------------------------------
-void DmpRdcAlgEQM::EraseBuffer(const long &id){
+void DmpAlgRdcEQM::EraseBuffer(const long &id){
   if(fHeaderBuf.find(id) != fHeaderBuf.end()){
     delete fHeaderBuf[id];
     fHeaderBuf.erase(id);

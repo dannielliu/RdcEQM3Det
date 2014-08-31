@@ -1,11 +1,11 @@
 /*
- *  $Id: DmpRdcAlgEQM.h, 2014-08-17 20:53:59 DAMPE $
+ *  $Id: DmpAlgRdcEQM.h, 2014-08-31 22:46:15 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 27/05/2014
 */
 
-#ifndef DmpRdcAlgEQM_H
-#define DmpRdcAlgEQM_H
+#ifndef DmpAlgRdcEQM_H
+#define DmpAlgRdcEQM_H
 
 #include <boost/filesystem.hpp>     // path
 #include <fstream>
@@ -46,14 +46,14 @@ class DmpEvtRawPsd;
 class DmpEvtRawNud;
 class DmpEvtHeader;
 
-class DmpRdcAlgEQM : public DmpVAlg{
+class DmpAlgRdcEQM : public DmpVAlg{
 /*
- *  DmpRdcAlgEQM
+ *  DmpAlgRdcEQM
  *
  */
 public:
-  DmpRdcAlgEQM();
-  ~DmpRdcAlgEQM();
+  DmpAlgRdcEQM();
+  ~DmpAlgRdcEQM();
 
   void Set(const std::string&,const std::string&);
   bool Initialize();

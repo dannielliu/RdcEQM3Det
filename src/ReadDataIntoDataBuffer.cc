@@ -1,17 +1,17 @@
 /*
- *  $Id: ReadDataIntoDataBuffer.cc, 2014-08-21 17:09:15 DAMPE $
+ *  $Id: ReadDataIntoDataBuffer.cc, 2014-08-31 22:46:51 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 08/08/2014
 */
 
-#include "DmpRdcAlgEQM.h"
+#include "DmpAlgRdcEQM.h"
 #include "DmpEDetectorID.h"
 #include "DmpCore.h"
 #include "DmpParameterBgo.h"
 #include "DmpParameterPsd.h"
 #include "DmpParameterNud.h"
 
-bool DmpRdcAlgEQM::ReadDataIntoDataBuffer(){
+bool DmpAlgRdcEQM::ReadDataIntoDataBuffer(){
   static short s_LastPkgID = -1, s_LastFeeTrg = -1, s_CurrentFeeTrg = 0;
   static short s_TotalFeeNo = DmpParameterBgo::kFeeNo+DmpParameterNud::kFeeNo+DmpParameterPsd::kFeeNo;
   unsigned int scientificHeader = 0;         // 4 bytes 0xe225 0813
@@ -111,7 +111,7 @@ std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::e
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::CheckE2250813DataLength(const int &n){
+bool DmpAlgRdcEQM::CheckE2250813DataLength(const int &n){
   int skipPoint = fFile.tellg();
   fFile.seekg(skipPoint+n+1-8,std::ios::beg);   // time: 8 bytes. need 1
   unsigned int scientificHeader = 0;            // 4 bytes 0xe225 0813
@@ -124,7 +124,7 @@ bool DmpRdcAlgEQM::CheckE2250813DataLength(const int &n){
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::CheckEb90DataLength(const int &n){
+bool DmpAlgRdcEQM::CheckEb90DataLength(const int &n){
   int skipPoint = fFile.tellg();
   fFile.seekg(skipPoint+n-2,std::ios::beg);   // NOTE:  n include 2 bytes which is data length
   unsigned short header = 0;         // 4 bytes 0xe225 0813
@@ -137,7 +137,7 @@ bool DmpRdcAlgEQM::CheckEb90DataLength(const int &n){
 }
 
 //-------------------------------------------------------------------
-void DmpRdcAlgEQM::Exception(const int &endOfLastE2250813,const std::string &e){
+void DmpAlgRdcEQM::Exception(const int &endOfLastE2250813,const std::string &e){
   DmpLogError<<e; PrintTime();
   fFile.seekg(endOfLastE2250813,std::ios::beg);
   unsigned int scientificHeader = 0;         // 4 bytes 0xe225 0813

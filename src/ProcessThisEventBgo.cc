@@ -1,5 +1,5 @@
 /*
- *  $Id: ProcessThisEventBgo.cc, 2014-08-22 17:12:12 DAMPE $
+ *  $Id: ProcessThisEventBgo.cc, 2014-08-31 22:47:11 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 09/03/2014
  *    Yifeng WEI (weiyf@mail.ustc.edu.cn) 24/04/2014
@@ -7,14 +7,14 @@
 
 #include "DmpEvtRawBgo.h"
 #include "DmpDataBuffer.h"
-#include "DmpRdcAlgEQM.h"
+#include "DmpAlgRdcEQM.h"
 #include "DmpBgoBase.h"
 #include "DmpParameterBgo.h"
 
 //-------------------------------------------------------------------
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
-bool DmpRdcAlgEQM::InitializeBgo(){
+bool DmpAlgRdcEQM::InitializeBgo(){
   if(fCNCTPathBgo == "NO"){
     DmpLogInfo<<"No set connector:\tBgo"<<DmpLogEndl;
     return true;
@@ -54,7 +54,7 @@ bool DmpRdcAlgEQM::InitializeBgo(){
 }
 
 //-------------------------------------------------------------------
-bool DmpRdcAlgEQM::ProcessThisEventBgo(const long &id){
+bool DmpAlgRdcEQM::ProcessThisEventBgo(const long &id){
   if(fBgoBuf.find(id) == fBgoBuf.end()){
   std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<") not find "<<id<<std::endl;
     return false;
