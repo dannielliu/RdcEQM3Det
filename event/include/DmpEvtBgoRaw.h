@@ -32,7 +32,8 @@ public:
   short GetTrigger()const{return fTrigger;}
   short GetRunMode()const{return fRunMode;}
   std::vector<DmpFeeNavig> GetFeeNavigator()const{return fFeeNavig;}
-  short GetSignal(const short &gid)const;
+  short GetSignalSize()const{return fADC.size();}
+  bool GetSignal(const short &index,short &gid,short &adc)const;
 
 private:
   short fTrigger;

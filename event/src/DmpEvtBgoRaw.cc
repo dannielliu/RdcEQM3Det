@@ -76,13 +76,12 @@ void DmpEvtBgoRaw::GenerateStatus(){
 }
 
 //-------------------------------------------------------------------
-short DmpEvtBgoRaw::GetSignal(const short &gid)const{
-  short n= fGlobalDynodeID.size();
-  for(size_t i=0;i<n;++i){
-    if(gid == fGlobalDynodeID[i]){
-      return fADC[i];
-    }
+bool DmpEvtBgoRaw::GetSignal(const short &index,short &gid,short&adc)const{
+  if(index<fADC.size()){
+    gid = fGlobalDynodeID[index];
+    adc = fADC[index];
+    return true;
   }
-  return -999;
+  return false;
 }
 
