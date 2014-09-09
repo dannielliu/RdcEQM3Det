@@ -76,7 +76,7 @@ bool DmpAlgRdcEQM::Initialize(){
     return false;
   }else{
     std::string name = "Error_"+fInDataName.filename().string();
-    DmpLogInfo<<"Reading "<<fInDataName.string()<<"\tError data in "<<name<<DmpLogEndl;
+    DmpLogInfo<<"Reading "<<fInDataName.string()<<".\tError data in "<<name<<DmpLogEndl;
     fOutError.open(name.c_str(),std::ios::out|std::ios::binary);
   }
   fEvtHeader = new DmpEvtHeader();
@@ -129,7 +129,7 @@ bool DmpAlgRdcEQM::ProcessThisEventHeader(const long &id){
 
 //-------------------------------------------------------------------
 void DmpAlgRdcEQM::PrintTime()const{
-  std::cout<<"  Time:"<<fHeaderBuf.size()<<"\t";
+  std::cout<<"\t\tTime:";
   for(size_t i=0;i<6;++i){
     std::cout<<std::hex<<"  "<<(short)(unsigned char)(--fHeaderBuf.end())->second->Time[i];
   }

@@ -17,6 +17,9 @@ bool DmpAlgRdcEQM::ReadDataIntoDataBuffer(){
   unsigned int scientificHeader = 0;         // 4 bytes 0xe225 0813
   fFile.read((char*)(&scientificHeader),4);
   while(0xe2250813 != htobe32(scientificHeader)){
+    if(fFile.tellg() == -1){
+      return false;
+    }
     fFile.seekg((int)fFile.tellg()-3,std::ios::beg);
     fFile.read((char*)(&scientificHeader),4);
   }
@@ -28,12 +31,14 @@ bool DmpAlgRdcEQM::ReadDataIntoDataBuffer(){
     DmpLogWarning<<"Scientific data package count not continuous...\tLast/Current: "<<s_LastPkgID<<"/"<<packetID<<DmpLogEndl;
   }
   s_LastPkgID = packetID;
-//std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")"<<std::hex<<packetID<<std::dec<<std::endl;
   unsigned short dataLength = 0;
   fFile.read((char*)(&dataLength),2);
   dataLength = htobe16(dataLength);
   char time[8];
   fFile.read(time,8);
+  if(fFile.tellg() == -1){  // data length right
+    return false;
+  }
   _HeaderNavig *newEvt = new _HeaderNavig(dataLength,&time[2]);
   fHeaderBuf.insert(std::make_pair(fGoodRawEventID,newEvt));
   if(CheckE2250813DataLength(dataLength)){    // will find next 0xe2250813 as expected
@@ -61,7 +66,7 @@ bool DmpAlgRdcEQM::ReadDataIntoDataBuffer(){
             s_LastFeeTrg = s_CurrentFeeTrg;
           }else{
             if(newFee->Navigator.Trigger != s_CurrentFeeTrg){    // trigger match
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
+              DmpLogError<<" trigger_0 = "<<std::hex<<s_CurrentFeeTrg<<"\t trigger_"<<i<<" = "<<newFee->Navigator.Trigger<<std::dec<<DmpLogEndl;
               Exception(endOfLastHeader,"Trigger not match");
               return false;
             }
@@ -79,28 +84,24 @@ std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::e
               // *  TODO: 
               // *
             }else{
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
               Exception(endOfLastHeader,"Fee type error");
               return false;
             }
           }else{
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
             Exception(endOfLastHeader,"CRC error");
             return false;
           }
         }else{
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
           Exception(endOfLastHeader,"Data length error [0xeb90]");
           return false;
         }
       }else{
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
         Exception(endOfLastHeader,"Not find 0xeb90");
         return false;
       }
     }
   }else{
-std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<fEventInBuf.size()<<std::endl;
+std::cout<<"xxDEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<(int)fFile.tellg()<<std::endl;
     Exception(endOfLastHeader,"Data length error [0xe2250813]");
     return false;
   }
@@ -138,11 +139,15 @@ bool DmpAlgRdcEQM::CheckEb90DataLength(const int &n){
 
 //-------------------------------------------------------------------
 void DmpAlgRdcEQM::Exception(const int &endOfLastE2250813,const std::string &e){
-  DmpLogError<<e; PrintTime();
+  DmpLogError<<e<<"\tEvent ID: "<<gCore->GetCurrentEventID(); PrintTime();
   fFile.seekg(endOfLastE2250813,std::ios::beg);
   unsigned int scientificHeader = 0;         // 4 bytes 0xe225 0813
   fFile.read((char*)(&scientificHeader),4);
   while(0xe2250813 != htobe32(scientificHeader)){
+    if(fFile.tellg() == -1){
+      fFile.seekg(0,std::ios::end);
+      break;
+    }
     fFile.seekg((int)fFile.tellg()-3,std::ios::beg);
     fFile.read((char*)(&scientificHeader),4);
   }
@@ -153,6 +158,7 @@ void DmpAlgRdcEQM::Exception(const int &endOfLastE2250813,const std::string &e){
   fOutError.write(errorData,nBytes);
   delete[] errorData;
   EraseBuffer(fGoodRawEventID);
+  std::cout<<std::endl;
 }
 
 
