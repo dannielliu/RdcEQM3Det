@@ -39,11 +39,6 @@ void DmpAlgRdcEQM::Set(const std::string &type, const std::string &argv){
     case 0: // BinaryFile
     {
       fInDataName = argv;
-      if("NOOUT"==gRootIOSvc->GetOutputFileName()){
-        //std::string name = this->GetInputFileName()-fInDataName.extension().string();
-        //gRootIOSvc->Set("OutData/FileName","./"+name+"_raw.root");
-        gRootIOSvc->Set("OutData/FileName","./"+this->GetInputFileName()+"_raw.root");
-      }
       break;
     }
     case 1: // Connector/Bgo
@@ -75,6 +70,9 @@ void DmpAlgRdcEQM::Set(const std::string &type, const std::string &argv){
 
 //-------------------------------------------------------------------
 bool DmpAlgRdcEQM::Initialize(){
+  if("NOOUT"==gRootIOSvc->GetOutputFileName()){
+    gRootIOSvc->Set("OutData/FileName","./"+this->GetInputFileName()+"_raw.root");
+  }
   fFile.open(fInDataName.c_str(),std::ios::in|std::ios::binary);
   if(not fFile.good()){
     DmpLogError<<"Open "<<fInDataName<<" failed"<<DmpLogEndl;

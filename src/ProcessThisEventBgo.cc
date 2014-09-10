@@ -67,13 +67,13 @@ bool DmpAlgRdcEQM::ProcessThisEventBgo(const long &id){
       short nChannel = fBgoBuf[id][i]->Signal.size()/3;
       for(size_t c=0;c<nChannel;++c){
         short channelID = (short)(unsigned char)fBgoBuf[id][i]->Signal[3*c];
-        short v = (short)((fBgoBuf[id][i]->Signal[3*c+1]<<4) | fBgoBuf[id][i]->Signal[3*c+2]);
+        short v = (short)((fBgoBuf[id][i]->Signal[3*c+1]<<8) | (fBgoBuf[id][i]->Signal[3*c+2]&0x00ff));
         fEvtBgo->AppendSignal(fMapBgo[feeID*1000+channelID],v);
       }
     }else if(DmpERunMode::kOriginal == fBgoBuf[id][i]->Navigator.RunMode || DmpERunMode::kCalDAC == fBgoBuf[id][i]->Navigator.RunMode){
       short nChannel = fBgoBuf[id][i]->Signal.size()/2;
       for(size_t c=0;c<nChannel;++c){
-        short v = (short)((fBgoBuf[id][i]->Signal[2*c]<<4) | fBgoBuf[id][i]->Signal[2*c+1]);
+        short v = (short)((fBgoBuf[id][i]->Signal[2*c]<<8) | (fBgoBuf[id][i]->Signal[2*c+1]&0x00ff));
         fEvtBgo->AppendSignal(fMapBgo[feeID*1000+c],v);
       }
     }else{
