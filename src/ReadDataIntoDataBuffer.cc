@@ -10,10 +10,11 @@
 #include "DmpParameterBgo.h"
 #include "DmpParameterPsd.h"
 #include "DmpParameterNud.h"
+#include "DmpParameterStk.h"
 
 bool DmpAlgRdcEQM::ReadDataIntoDataBuffer(){
   static short s_LastPkgID = -1, s_LastFeeTrg = -1, s_CurrentFeeTrg = 0;
-  static short s_TotalFeeNo = DmpParameterBgo::kFeeNo+DmpParameterNud::kFeeNo+DmpParameterPsd::kFeeNo;
+  static short s_TotalFeeNo = DmpParameterBgo::kFeeNo+DmpParameterNud::kFeeNo+DmpParameterPsd::kFeeNo+DmpParameterStk::kTrbNo;
   unsigned int scientificHeader = 0;         // 4 bytes 0xe225 0813
   fFile.read((char*)(&scientificHeader),4);
   while(0xe2250813 != htobe32(scientificHeader)){
@@ -58,6 +59,11 @@ bool DmpAlgRdcEQM::ReadDataIntoDataBuffer(){
           crc= htobe16(crc);
           _FeeData *newFee = new _FeeData(data,dataLength,crc);
           //DmpLogInfo<<"Fee ID 0x"<<std::hex<<newFee->Navigator.FeeID<<", Mode "<<newFee->Navigator.RunMode<<std::dec<<DmpLogEndl;
+          short detectorID = (newFee->Navigator.FeeID>>4)&0x03;
+          if(DmpEDetectorID::kStk == detectorID){
+            delete newFee;
+            continue;
+          }
           if(i==0){ // trigger check
             s_CurrentFeeTrg = newFee->Navigator.Trigger;
             if((s_LastFeeTrg != -1) && ((s_CurrentFeeTrg&(s_LastFeeTrg+1)) != s_CurrentFeeTrg)){    // trigger continuous
@@ -67,11 +73,11 @@ bool DmpAlgRdcEQM::ReadDataIntoDataBuffer(){
           }else{
             if(newFee->Navigator.Trigger != s_CurrentFeeTrg){    // trigger match
               DmpLogError<<" trigger_0 = "<<std::hex<<s_CurrentFeeTrg<<"\t trigger_"<<i<<" = "<<newFee->Navigator.Trigger<<std::dec<<DmpLogEndl;
+              delete newFee;
               Exception(endOfLastHeader,"Trigger not match");
               return false;
             }
           }
-          short detectorID = (newFee->Navigator.FeeID>>4)&0x03;
           if(newFee->Navigator.CRCFlag){   // CRC check
             if(DmpEDetectorID::kBgo == detectorID){
               fBgoBuf[fGoodRawEventID].push_back(newFee);

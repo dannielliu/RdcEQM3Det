@@ -39,6 +39,11 @@ void DmpAlgRdcEQM::Set(const std::string &type, const std::string &argv){
     case 0: // BinaryFile
     {
       fInDataName = argv;
+      if("NOOUT"==gRootIOSvc->GetOutputFileName()){
+        //std::string name = this->GetInputFileName()-fInDataName.extension().string();
+        //gRootIOSvc->Set("OutData/FileName","./"+name+"_raw.root");
+        gRootIOSvc->Set("OutData/FileName","./"+this->GetInputFileName()+"_raw.root");
+      }
       break;
     }
     case 1: // Connector/Bgo
