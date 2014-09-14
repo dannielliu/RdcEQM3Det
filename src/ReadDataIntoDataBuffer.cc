@@ -11,10 +11,11 @@
 #include "DmpParameterPsd.h"
 #include "DmpParameterNud.h"
 #include "DmpParameterStk.h"
+#include "portable_endian.h"
 
 bool DmpAlgRdcEQM::ReadDataIntoDataBuffer(){
   static short s_LastPkgID = -1, s_LastFeeTrg = -1, s_CurrentFeeTrg = 0;
-  static short s_TotalFeeNo = DmpParameterBgo::kFeeNo+DmpParameterNud::kFeeNo+DmpParameterPsd::kFeeNo+DmpParameterStk::kTrbNo;
+  static short s_TotalFeeNo = DmpParameterBgo::kFeeNo+DmpParameterNud::kFeeNo+DmpParameterPsd::kFeeNo;//+DmpParameterStk::kTrbNo;
   unsigned int scientificHeader = 0;         // 4 bytes 0xe225 0813
   fFile.read((char*)(&scientificHeader),4);
   while(0xe2250813 != htobe32(scientificHeader)){
@@ -146,18 +147,22 @@ bool DmpAlgRdcEQM::CheckEb90DataLength(const int &n){
 //-------------------------------------------------------------------
 void DmpAlgRdcEQM::Exception(const int &endOfLastE2250813,const std::string &e){
   DmpLogError<<e<<"\tEvent ID: "<<gCore->GetCurrentEventID(); PrintTime();
+	//std::cout<<"stream position (before exception):"<<(int)fFile.tellg()<<std::endl;
+	fFile.clear();
   fFile.seekg(endOfLastE2250813,std::ios::beg);
+	//std::cout<<"stream position (after setpos to last):"<<(int)fFile.tellg()<<std::endl;
   unsigned int scientificHeader = 0;         // 4 bytes 0xe225 0813
   fFile.read((char*)(&scientificHeader),4);
   while(0xe2250813 != htobe32(scientificHeader)){
     if(fFile.tellg() == -1){
+		  fFile.clear();
       fFile.seekg(0,std::ios::end);
       break;
     }
     fFile.seekg((int)fFile.tellg()-3,std::ios::beg);
     fFile.read((char*)(&scientificHeader),4);
   }
-  int nBytes = (int)fFile.tellg() - endOfLastE2250813;
+  int nBytes = (int)fFile.tellg() - endOfLastE2250813+4;// 4 is for next seekg
   char *errorData = new char[nBytes];
   fFile.seekg(endOfLastE2250813-4,std::ios::beg);
   fFile.read(errorData,nBytes);
