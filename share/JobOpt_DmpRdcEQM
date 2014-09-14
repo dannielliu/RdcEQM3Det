@@ -31,7 +31,7 @@ rdcAlgBT = RdcEQM.DmpAlgRdcEQM()
 #rdcAlgBT.Set("Stk/Connector",Stk/EQM")
 rdcAlgBT.Set("Bgo/Connector","Bgo/EQM")
 #rdcAlgBT.Set("Nud/Connector","Nud/EQM")
-rdcAlgBT.Set("BinaryFile","/Users/danny/software/dmpwork/DataSample/A2Data00_20140513-164225.frd")
+rdcAlgBT.Set("BinaryFile","/Users/danny/software/dmpwork/DataSample/A2Data00_20140513-174024.frd")
 DMPSW.RootIOSvc.Set("OutData/FileName","./test/DmpRdcData1.root")        # if NOT set, will use input name
 #rdcAlgBT.Set("BinaryFile","test_A2Data00_20140513-191731.frd")
 
